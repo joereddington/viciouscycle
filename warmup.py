@@ -6,7 +6,7 @@ import bleak
 
 def zone1(sender, data): 
     print("Here")
-    cadence=viciouscycle.handle_measurement(sender,data) 
+    cadence=viciouscycle.decode_and_handle_measurement(sender,data) 
     if cadence is None:
         print("None") 
         return
@@ -18,7 +18,7 @@ def zone1(sender, data):
 
 def zone2(sender, data): 
     print("Here")
-    cadence=viciouscycle.handle_measurement(sender,data) 
+    cadence=viciouscycle.decode_and_handle_measurement(sender,data) 
     if cadence is None:
         print("None") 
         return

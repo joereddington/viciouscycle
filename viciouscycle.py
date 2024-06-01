@@ -2,10 +2,36 @@ from bleak import BleakClient
 import asyncio
 import struct
 
+class Zone: 
+
+ def __init__(self, min_cadence, max_cadence, name, on_enter=None, on_leave=None):
+        self.min_cadence = min_cadence
+        self.max_cadence = max_cadence
+        self.name = name
+        self.on_enter = on_enter
+        self.on_leave = on_leave
+        self.in_zone=True
+
+ def react(self,cadence): 
+    if cadence < self.max_cadence:
+        if cadence > self.min_cadence: 
+            if self.in_zone: 
+                return #do nothing, we are still in the zone
+            else:
+                self.in_zone=True
+                self.on_enter()
+                return 
+    if self.in_zone: #We surely aren't in the zone right now because we are either above max or below min
+        self.in_zone=False
+        self.on_leave
+        
+        
+            
 
 
-def handle_measurement(sender, data):
+def handle_measurement(sender, data, conditions=None):
     global prev_cumulative_crank_revolutions, prev_last_crank_event_time
+    global current_zone
 
     # Read the flags field
     flags = data[0]
@@ -60,6 +86,8 @@ def handle_measurement(sender, data):
         # Update previous values
         prev_cumulative_crank_revolutions = cumulative_crank_revolutions
         prev_last_crank_event_time = last_crank_event_time
+        return cadence 
+    return None
  
 async def run():
     async with BleakClient(sensor_address) as client:
@@ -93,5 +121,7 @@ CSC_MEASUREMENT_UUID = "00002a5b-0000-1000-8000-00805f9b34fb"
 # Initialize previous values for cadence calculation
 prev_cumulative_crank_revolutions = None
 prev_last_crank_event_time = None
-asyncio.run(run())
+
+if __name__ == "__main__":
+    asyncio.run(run())
 

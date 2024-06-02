@@ -40,7 +40,7 @@ def decode_and_handle_measurement(sender, data):
     if last_crank_event_time is not None:
         print("Last crank event time:", last_crank_event_time)
     #Then palm it off to the next place 
-    handle_measurement(cumulative_wheel_revolutions,last_wheel_event_time,cumulative_crank_revolutions,last_crank_event_time)
+    return handle_measurement(cumulative_wheel_revolutions,last_wheel_event_time,cumulative_crank_revolutions,last_crank_event_time)
 
 
 def handle_measurement(cumulative_wheel_revolutions,last_wheel_event_time,cumulative_crank_revolutions,last_crank_event_time): 

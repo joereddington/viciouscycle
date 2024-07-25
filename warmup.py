@@ -46,6 +46,7 @@ async def warmup():
 
 
 if __name__ == "__main__":
+# TODO - make this into a proper gygame interface 
     print("Entering Warm up") 
     print("Seeking Sensor")  
     try: 

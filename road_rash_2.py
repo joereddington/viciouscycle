@@ -13,9 +13,7 @@ def go_forward(sender, data):
     print(f"Cadence: {cadence}")
     if 80 < cadence < 150: 
         print("Doing great!")
-        keyboard.hold_key('z',2)
-        # Adjust the duration if necessary
-
+        keyboard.hold_key('z',1.5)
     else:
         print(f"Cadence is only {cadence}")
 
@@ -34,8 +32,20 @@ async def play():
     except Exception as e:
         print(f"An error occurred: {e}")
 
+def hello(): 
+    import pyfiglet
+    figlet = pyfiglet.Figlet(font='slant')
+    # Generate the ASCII art for "Vicious Cycle"
+    ascii_art = figlet.renderText('Vicious Cycle')
+
+    # Print the ASCII art
+    print(ascii_art)
+
+
 if __name__ == "__main__":
-    print("Starting program...")
+    hello()
+    print("Searching for sensor...")
+    print("Stay on this window until the first keyDown event") 
     try:
         asyncio.run(play())
     except KeyboardInterrupt:

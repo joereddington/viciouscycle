@@ -7,6 +7,7 @@ def hold_key(key, duration):
     time.sleep(duration)    # Hold the key down for the specified duration
     pyautogui.keyUp(key)    # Release the key
     print(f"Released '{key}' key.")
+#TODO - investigate this a bit more 
 
 if __name__ == "__main__":
     key_to_hold = 'up'

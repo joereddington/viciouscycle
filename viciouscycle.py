@@ -1,6 +1,7 @@
 from bleak import BleakClient
 from collections import deque
 import asyncio
+import time
 import struct
 
 def debug_flags(flags):
@@ -155,29 +156,30 @@ def decode_and_handle_measurement(sender, data):
     #Then palm it off to the next place 
     return handle_measurement(cumulative_crank_revolutions,last_crank_event_time)
 
+import time
 
 def handle_measurement(cumulative_crank_revolutions, last_crank_event_time, n=10):
     global buffer, cadence
 
     # Check if valid data is provided
     if cumulative_crank_revolutions is not None and last_crank_event_time is not None:
-        # Add the new data to the buffer
-        # TODO - if the data is the same as the last one, update the timer  
-        buffer.append((cumulative_crank_revolutions, last_crank_event_time))
-        print("Current Buffer Values:")
-        for idx, (revolutions, event_time) in enumerate(buffer):
-            print(f"Entry {idx + 1}: Crank Revolutions = {revolutions}, Event Time = {event_time}")
+        current_time = int(time.time())  # Get current time in seconds since epoch
 
+        # Add the new data and current time to the buffer
+        buffer.append((cumulative_crank_revolutions, last_crank_event_time, current_time))
+        print("Current Buffer Values:")
+        for idx, (revolutions, event_time, timestamp) in enumerate(buffer):
+            print(f"Entry {idx + 1}: Crank Revolutions = {revolutions}, Event Time = {event_time}, Timestamp = {timestamp}")
 
         # Determine if we have enough entries for comparison
         if len(buffer) >= n:
             # Retrieve the data from n entries ago
-            prev_cumulative_crank_revolutions, prev_last_crank_event_time = buffer[-n]
+            prev_cumulative_crank_revolutions, prev_last_crank_event_time, _ = buffer[-n]
         else:
             # Not enough data; use the oldest available data
             print("Using oldest available data")
             if len(buffer) > 1:
-                prev_cumulative_crank_revolutions, prev_last_crank_event_time = buffer[0]
+                prev_cumulative_crank_revolutions, prev_last_crank_event_time, _ = buffer[0]
             else:
                 print("Not enough data to calculate cadence.")
                 return None
@@ -187,7 +189,6 @@ def handle_measurement(cumulative_crank_revolutions, last_crank_event_time, n=10
         time_diff = last_crank_event_time - prev_last_crank_event_time
         print(f"Revolutions Difference: {revolutions_diff}")
         print(f"Time Difference (in 1/1024 seconds): {time_diff}")
- 
 
         # Handle the case where the event time wraps around (16-bit wrap around)
         if time_diff < 0:
@@ -200,10 +201,19 @@ def handle_measurement(cumulative_crank_revolutions, last_crank_event_time, n=10
         cadence = (revolutions_diff * 1024 * 60) / time_diff
         print("Cadence (RPM):", cadence)
 
+        # Calculate and print the separate cadence based on time
+        if len(buffer) >= 2:
+            prev_revolutions, prev_event_time, prev_timestamp = buffer[-2]
+            time_diff_seconds = current_time - prev_timestamp
+            if time_diff_seconds > 0:  # Ensure time difference is not zero
+                separate_cadence = (revolutions_diff * 60) / (time_diff_seconds / 60)
+                print(f"Separate Cadence based on clock time (RPM): {separate_cadence}")
+
         return cadence
     else:
         print("handle_measurement was passed None values")
     return None
+
 
  
 async def run(): #Only when run as main obviously

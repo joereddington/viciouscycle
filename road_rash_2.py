@@ -11,7 +11,7 @@ def go_forward(sender, data):
         return
     
     print(f"Cadence: {cadence}")
-    if 80 < cadence < 150: 
+    if 90 < cadence < 150: 
         print("Doing great!")
         keyboard.hold_key('z',1.5)
     else:

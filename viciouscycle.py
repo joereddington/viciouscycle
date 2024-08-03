@@ -206,7 +206,7 @@ def handle_measurement(cumulative_crank_revolutions, last_crank_event_time, n=10
             prev_revolutions, prev_event_time, prev_timestamp = buffer[-2]
             time_diff_seconds = current_time - prev_timestamp
             if time_diff_seconds > 0:  # Ensure time difference is not zero
-                separate_cadence = (revolutions_diff * 60) / (time_diff_seconds / 60)
+                separate_cadence = (revolutions_diff * 60) / (time_diff_seconds)
                 print(f"Separate Cadence based on clock time (RPM): {separate_cadence}")
 
         return cadence
